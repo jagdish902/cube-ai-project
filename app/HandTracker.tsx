@@ -6,9 +6,7 @@ import * as cam from "@mediapipe/camera_utils";
 export default function HandTracker({ isActive }: { isActive: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const lastMoveTime = useRef(0);
-  // LOWER THRESHOLD = FASTER REACTION
   const MOVE_THRESHOLD = 0.12; 
-  // LOWER COOLDOWN = INSTANT NEXT MOVE
   const MOVE_COOLDOWN = 350; 
 
   useEffect(() => {
@@ -19,8 +17,8 @@ export default function HandTracker({ isActive }: { isActive: boolean }) {
     });
 
     holistic.setOptions({
-      modelComplexity: 0,       // Lightest model for zero lag
-      smoothLandmarks: false,   // No averaging = instant tracking
+      modelComplexity: 0,       
+      smoothLandmarks: false,   
       minDetectionConfidence: 0.5,
       minTrackingConfidence: 0.5,
     });

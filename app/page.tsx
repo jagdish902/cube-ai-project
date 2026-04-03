@@ -35,11 +35,11 @@ export default function Home() {
   return (
     <main className="min-h-screen w-full bg-[#050505] text-white p-4 flex flex-col font-sans overflow-x-hidden">
       
-      {/* HEADER */}
+      {/* HEADER SECTION */}
       <nav className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-zinc-900 pb-6">
         <div className="flex flex-col">
           <h1 className="text-2xl font-black italic uppercase text-orange-500 tracking-tighter">CUBE_MASTER_V1</h1>
-          <span className="text-[7px] text-zinc-700 font-bold tracking-[0.3em] mt-1 uppercase">AI_Gesture_System_Active</span>
+          <span className="text-[7px] text-zinc-700 font-bold tracking-[0.3em] mt-1 uppercase">AI_GESTURE_INTERFACE</span>
         </div>
         
         <div className="flex items-center gap-4 sm:gap-10">
@@ -51,13 +51,13 @@ export default function Home() {
           <div className="flex gap-2">
             <button 
               onClick={() => setStatus(status === "ACTIVE" ? "PAUSED" : "ACTIVE")} 
-              className={`text-[10px] font-black uppercase px-5 py-2.5 rounded-xl border transition-all ${status === 'ACTIVE' ? 'border-zinc-800 text-zinc-400 hover:bg-zinc-900' : 'bg-green-600 border-green-500 text-white'}`}
+              className={`text-[10px] font-black uppercase px-5 py-2.5 rounded-xl border transition-all ${status === 'ACTIVE' ? 'border-zinc-800 text-zinc-400' : 'bg-green-600 border-green-500 text-white'}`}
             >
               {status === "ACTIVE" ? "Pause" : "Resume"}
             </button>
             <button 
               onClick={() => window.dispatchEvent(new CustomEvent("cube-move", { detail: "RESET" }))} 
-              className="text-[10px] font-black uppercase bg-red-600 hover:bg-red-700 px-5 py-2.5 rounded-xl shadow-lg shadow-red-900/20"
+              className="text-[10px] font-black uppercase bg-red-600 px-5 py-2.5 rounded-xl shadow-lg shadow-red-900/20"
             >
               Restart
             </button>
@@ -65,36 +65,45 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* GRID */}
+      {/* MAIN LAYOUT: Sidebar (col-1) + Cube (col-4) */}
       <div className="flex-1 flex flex-col lg:grid lg:grid-cols-5 gap-6">
         
-        {/* SENSOR & LOG */}
+        {/* SIDEBAR PANEL */}
         <div className="lg:col-span-1 flex flex-col gap-6">
+          
+          {/* CAMERA BOX */}
           <section className="bg-[#0a0a0a] border border-zinc-800 p-5 rounded-3xl">
             <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
                 <div className={`w-2 h-2 rounded-full ${isCameraOn && status === "ACTIVE" ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500'}`}></div>
-                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">/AI_SENSOR</span>
+                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">/SENSOR</span>
               </div>
               <button 
                 onClick={() => setIsCameraOn(!isCameraOn)}
                 className={`text-[8px] font-black uppercase px-2 py-1 rounded border transition-colors ${isCameraOn ? 'text-zinc-500 border-zinc-800' : 'text-green-500 border-green-900/50'}`}
               >
-                {isCameraOn ? "[ DISABLE ]" : "[ ENABLE ]"}
+                {isCameraOn ? "[ OFF ]" : "[ ON ]"}
               </button>
             </div>
             <div className="aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-900 relative">
               <HandTracker isActive={isCameraOn && status === "ACTIVE"} />
               {!isCameraOn && (
-                <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90 text-zinc-800 text-[10px] font-black uppercase">Sensor_Off</div>
+                <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90 text-zinc-800 text-[10px] font-black">OFFLINE</div>
               )}
             </div>
           </section>
 
+          {/* HISTORY LOG (With the Clear Button inside) */}
           <section className="flex-1 bg-[#0a0a0a] border border-zinc-800 p-5 rounded-3xl flex flex-col min-h-[250px]">
              <div className="flex justify-between items-center mb-4">
                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">/HISTORY</span>
-               <button onClick={() => setMoveHistory([])} className="text-[9px] font-black uppercase text-orange-500/40 hover:text-orange-500">Clear</button>
+               {/* CLEAR BUTTON IS HERE */}
+               <button 
+                 onClick={() => setMoveHistory([])} 
+                 className="text-[9px] font-black uppercase text-orange-500/60 hover:text-orange-500 border border-orange-950/30 px-2 py-1 rounded"
+               >
+                 Clear All
+               </button>
              </div>
              <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
                 {moveHistory.map((m, i) => (
@@ -107,7 +116,7 @@ export default function Home() {
           </section>
         </div>
 
-        {/* CUBE DISPLAY */}
+        {/* MAIN CUBE AREA */}
         <div className="lg:col-span-4 bg-[#0a0a0a] border border-zinc-800 rounded-[2.5rem] flex flex-col lg:flex-row items-center justify-center p-8 lg:p-16 relative overflow-hidden shadow-2xl">
           <div className="w-full h-full min-h-[400px] lg:min-h-0 flex items-center justify-center z-10">
             <Cube />
