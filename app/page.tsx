@@ -33,28 +33,31 @@ export default function Home() {
   }, [status, playTurnSound]);
 
   return (
-    <main className="min-h-screen w-full bg-[#050505] text-white p-4 flex flex-col font-sans overflow-x-hidden">
+    <main className="min-h-screen w-full bg-[#050505] text-white p-4 flex flex-col font-sans overflow-x-hidden selection:bg-orange-500/30">
       
-      {/* TOP NAVIGATION: Works for Mobile (Wrap) and Desktop (Space-between) */}
-      <nav className="flex flex-wrap justify-between items-center gap-4 mb-4 border-b border-zinc-900 pb-4">
-        <h1 className="text-xl font-black italic uppercase text-orange-500 tracking-tighter">CUBE_MASTER_V1</h1>
+      {/* TOP NAVIGATION */}
+      <nav className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-zinc-900 pb-6">
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-black italic uppercase text-orange-500 tracking-tighter leading-none">CUBE_MASTER_V1</h1>
+          <span className="text-[7px] text-zinc-700 font-bold tracking-[0.3em] mt-1">NEURAL_INTERFACE_READY</span>
+        </div>
         
         <div className="flex items-center gap-4 sm:gap-10">
           <div className="flex flex-col items-end">
             <span className="text-[8px] text-zinc-600 uppercase font-black tracking-widest">TOTAL_MOVES</span>
-            <span className="text-2xl font-mono font-black">{moveCount.toString().padStart(3, '0')}</span>
+            <span className="text-3xl font-mono font-black tabular-nums">{moveCount.toString().padStart(3, '0')}</span>
           </div>
           
           <div className="flex gap-2">
             <button 
               onClick={() => setStatus(status === "ACTIVE" ? "PAUSED" : "ACTIVE")} 
-              className={`text-[10px] font-black uppercase px-4 py-2 rounded-xl border transition-all ${status === 'ACTIVE' ? 'border-zinc-800 text-zinc-500 hover:bg-zinc-900' : 'bg-green-600 border-green-500 text-white animate-pulse'}`}
+              className={`text-[10px] font-black uppercase px-5 py-2.5 rounded-xl border transition-all duration-200 ${status === 'ACTIVE' ? 'border-zinc-800 text-zinc-400 hover:bg-zinc-900' : 'bg-green-600 border-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.3)]'}`}
             >
               {status === "ACTIVE" ? "Pause" : "Resume"}
             </button>
             <button 
               onClick={() => window.dispatchEvent(new CustomEvent("cube-move", { detail: "RESET" }))} 
-              className="text-[10px] font-black uppercase bg-red-600 hover:bg-red-700 px-4 py-2 rounded-xl transition-colors shadow-lg shadow-red-900/20"
+              className="text-[10px] font-black uppercase bg-red-600 hover:bg-red-700 px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-red-900/20 active:scale-95"
             >
               Restart
             </button>
@@ -62,38 +65,55 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* RESPONSIVE GRID: 1 Column on Mobile, 5 Columns on Desktop */}
-      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-5 gap-4">
+      {/* RESPONSIVE GRID */}
+      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-5 gap-6">
         
         {/* LEFT PANEL: Sensor & History */}
-        <div className="lg:col-span-1 flex flex-col gap-4">
+        <div className="lg:col-span-1 flex flex-col gap-6">
           
           {/* AI SENSOR BOX */}
-          <section className="bg-[#0a0a0a] border border-zinc-800 p-4 rounded-2xl shadow-2xl">
-            <div className="flex justify-between items-center mb-3">
+          <section className="bg-[#0a0a0a] border border-zinc-800 p-5 rounded-3xl shadow-2xl ring-1 ring-white/5">
+            <div className="flex justify-between items-center mb-4">
               <div className="flex items-center gap-2">
-                <div className={`w-1.5 h-1.5 rounded-full ${isCameraOn ? 'bg-green-500 shadow-[0_0_8px_#22c55e]' : 'bg-red-500'}`}></div>
+                <div className={`w-2 h-2 rounded-full transition-all duration-500 ${isCameraOn && status === "ACTIVE" ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500 shadow-[0_0_10px_#ef4444]'}`}></div>
                 <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">/AI_SENSOR</span>
               </div>
-              <span className="text-[9px] font-black text-zinc-700 italic">LIVE</span>
+              <button 
+                onClick={() => setIsCameraOn(!isCameraOn)}
+                className={`text-[8px] font-black uppercase px-2 py-1 rounded border transition-colors ${isCameraOn ? 'text-zinc-500 border-zinc-800 hover:text-red-500 hover:border-red-900' : 'text-green-500 border-green-900/50 bg-green-500/5'}`}
+              >
+                {isCameraOn ? "[ DISABLE ]" : "[ ENABLE ]"}
+              </button>
             </div>
-            <div className="aspect-video bg-black rounded-xl overflow-hidden border border-zinc-900 ring-1 ring-white/5">
+            <div className="aspect-video bg-black rounded-2xl overflow-hidden border border-zinc-900 relative group">
               <HandTracker isActive={isCameraOn && status === "ACTIVE"} />
+              {!isCameraOn && (
+                <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/90">
+                  <span className="text-[10px] font-black text-zinc-800 uppercase tracking-[0.2em]">Sensor Offline</span>
+                </div>
+              )}
             </div>
           </section>
 
           {/* HISTORY BOX */}
-          <section className="flex-1 bg-[#0a0a0a] border border-zinc-800 p-4 rounded-2xl flex flex-col min-h-[200px] shadow-2xl">
-             <div className="flex justify-between items-center mb-3">
+          <section className="flex-1 bg-[#0a0a0a] border border-zinc-800 p-5 rounded-3xl flex flex-col min-h-[250px] shadow-2xl ring-1 ring-white/5">
+             <div className="flex justify-between items-center mb-4">
                <span className="text-zinc-500 text-[9px] font-black uppercase tracking-widest">/HISTORY_LOG</span>
-               <button onClick={() => setMoveHistory([])} className="text-[9px] font-black uppercase text-orange-500/50 hover:text-orange-500 transition-colors">Clear</button>
+               <button onClick={() => setMoveHistory([])} className="text-[9px] font-black uppercase text-orange-500/40 hover:text-orange-500 transition-colors">Clear All</button>
              </div>
              <div className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                {moveHistory.length === 0 && <div className="text-[10px] text-zinc-800 font-bold italic mt-4 uppercase">Waiting for input...</div>}
+                {moveHistory.length === 0 && (
+                  <div className="h-full flex flex-col items-center justify-center opacity-20 py-10">
+                    <div className="w-8 h-8 border-2 border-dashed border-zinc-700 rounded-full animate-spin-slow mb-4"></div>
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">No_Input_Detected</span>
+                  </div>
+                )}
                 {moveHistory.map((m, i) => (
-                  <div key={i} className={`p-3 rounded-xl border flex justify-between items-center transition-all ${i === 0 ? 'bg-orange-600/10 border-orange-600/40 text-orange-500 scale-[1.02]' : 'bg-zinc-950 border-zinc-900 text-zinc-700'}`}>
-                    <span className="font-black text-2xl italic tracking-tighter">{m}</span>
-                    <span className="text-[8px] font-black opacity-40 italic">{i === 0 ? 'LATEST' : 'PREV'}</span>
+                  <div key={i} className={`p-4 rounded-2xl border transition-all duration-300 ${i === 0 ? 'bg-orange-600/10 border-orange-600/40 text-orange-500 scale-[1.02] shadow-lg shadow-orange-950/10' : 'bg-zinc-950/50 border-zinc-900 text-zinc-700 opacity-60'}`}>
+                    <div className="flex justify-between items-center">
+                      <span className="font-black text-3xl italic tracking-tighter">{m}</span>
+                      <span className="text-[8px] font-black opacity-40 italic tracking-widest">{i === 0 ? 'LATEST' : `T-${i}`}</span>
+                    </div>
                   </div>
                 ))}
              </div>
@@ -101,23 +121,24 @@ export default function Home() {
         </div>
 
         {/* RIGHT PANEL: The 3D Cube */}
-        <div className="lg:col-span-4 bg-[#0a0a0a] border border-zinc-800 rounded-3xl flex flex-col lg:flex-row items-center justify-center p-6 lg:p-12 relative overflow-hidden shadow-2xl">
+        <div className="lg:col-span-4 bg-[#0a0a0a] border border-zinc-800 rounded-[2.5rem] flex flex-col lg:flex-row items-center justify-center p-8 lg:p-16 relative overflow-hidden shadow-2xl ring-1 ring-white/5">
           
-          {/* Subtle Background Glow */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-orange-600/5 blur-[120px] pointer-events-none"></div>
+          {/* Visual Flourish */}
+          <div className="absolute top-0 right-0 p-8 opacity-5">
+            <div className="text-[80px] font-black italic leading-none">CUBE</div>
+          </div>
 
-          {/* The Actual Cube Container */}
-          <div className="w-full h-full min-h-[350px] lg:min-h-0 flex items-center justify-center z-10">
+          <div className="w-full h-full min-h-[400px] lg:min-h-0 flex items-center justify-center z-10 drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
             <Cube />
           </div>
 
-          {/* MANUAL CONTROL BUTTONS: Row on Mobile, Column on Desktop */}
-          <div className="flex lg:flex-col flex-wrap justify-center gap-3 mt-8 lg:mt-0 lg:ml-10 z-10">
+          {/* MANUAL CONTROLS */}
+          <div className="flex lg:flex-col flex-wrap justify-center gap-3 mt-10 lg:mt-0 lg:ml-12 z-10 bg-black/40 p-4 rounded-3xl border border-white/5 backdrop-blur-sm">
             {["R", "L", "U", "D", "F", "B"].map((m) => (
               <button 
                 key={m} 
                 onClick={() => status === "ACTIVE" && window.dispatchEvent(new CustomEvent("cube-move", { detail: m }))} 
-                className={`w-12 h-12 lg:w-16 lg:h-16 rounded-2xl font-black text-xl border transition-all duration-75 ${status === "ACTIVE" ? "bg-zinc-950 border-zinc-800 hover:border-orange-500 hover:text-orange-500 active:scale-90 active:bg-orange-600 active:text-white active:border-orange-400" : "opacity-5 cursor-not-allowed"}`}
+                className={`w-12 h-12 lg:w-16 lg:h-16 rounded-2xl font-black text-xl border transition-all duration-150 ${status === "ACTIVE" ? "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:text-orange-500 hover:shadow-[0_0_15px_rgba(249,115,22,0.2)] active:scale-90 active:bg-orange-600 active:text-white" : "opacity-5 cursor-not-allowed grayscale"}`}
               >
                 {m}
               </button>
@@ -126,10 +147,18 @@ export default function Home() {
 
           {/* PAUSE OVERLAY */}
           {status === "PAUSED" && (
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-md z-20 flex items-center justify-center rounded-3xl border border-white/5">
-              <div className="text-center animate-pulse">
-                <h2 className="text-4xl font-black italic uppercase text-white/20 tracking-[1em] mb-2">SYSTEM_IDLE</h2>
-                <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">Press Resume to continue</p>
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl z-20 flex items-center justify-center rounded-[2.5rem] border border-white/5">
+              <div className="text-center">
+                <div className="flex gap-1 justify-center mb-4">
+                  {[1,2,3].map(i => <div key={i} className="w-1.5 h-1.5 bg-orange-500 animate-bounce" style={{animationDelay: `${i*0.1}s`}}></div>)}
+                </div>
+                <h2 className="text-5xl font-black italic uppercase text-white/10 tracking-[0.5em] mb-4">PAUSED</h2>
+                <button 
+                  onClick={() => setStatus("ACTIVE")}
+                  className="bg-orange-600 text-white text-[10px] font-black uppercase px-8 py-3 rounded-full hover:bg-orange-500 transition-all"
+                >
+                  Return to Interface
+                </button>
               </div>
             </div>
           )}
@@ -137,8 +166,9 @@ export default function Home() {
       </div>
 
       {/* FOOTER */}
-      <footer className="mt-4 flex justify-center lg:justify-start">
-        <span className="text-[8px] text-zinc-800 font-bold uppercase tracking-widest">© 2026 Developed by JAGDISH // UI_ENGINE_V1.0</span>
+      <footer className="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-zinc-900 pt-6">
+        <span className="text-[9px] text-zinc-700 font-black uppercase tracking-[0.4em]">Engine Status: Nominal // Latency: 12ms</span>
+        <span className="text-[9px] text-orange-500/50 font-bold uppercase tracking-widest">© 2026 Developed by JAGDISH</span>
       </footer>
     </main>
   );
